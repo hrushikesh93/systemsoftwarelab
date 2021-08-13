@@ -101,3 +101,97 @@ printf("\n\n");
 }  
 tavg=tavg/n; // average turnaround time wavg=wavg/n; // average wait time printf("tavg=%f\t  wavg=%f\n",tavg,wavg);  
 }// end of srtf  
+
+
+
+//---------------------------round robin-----------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+struct P
+{
+int pid,bt,tat,wt,at,ft;
+}job[100];
+void jobscheduler(struct P job[],int n,int q,int c)
+{
+int burst[100],k,t=0,done=0,current=0,diff=q,i=0;
+float tat_sum=0,wt_sum=0;
+for(i=0;i<n;i++)
+burst[i]=job[i].bt;
+if(c==0)
+current=-1;
+while(done<n)
+{
+if(c==1)
+{
+for(k=0;k<n;k++)
+{
+if(job[current].bt==0)
+current=k;
+if(job[k].bt<job[current].bt && job[k].bt>0 && job[k].at<=t)
+current=k;
+}
+
+diff=1;
+}
+else
+{
+while(1)
+{
+current=(current+1)%n;
+if(job[current].bt!=0)
+break;
+}
+diff=(q<=job[current].bt)?q:job[current].bt;
+}
+job[current].bt-=diff;
+t+=diff;
+if(job[current].bt==0)
+{
+done++;
+job[current].ft=t;
+}
+}
+if(c==1)
+printf("SRTF :\n");
+else
+printf("Round Robin :\n");
+for(i=0;i<n;i++)
+{
+job[i].bt=burst[i];
+job[i].tat=job[i].ft-job[i].at;
+job[i].wt=job[i].tat-job[i].bt;
+tat_sum+=job[i].tat;
+wt_sum+=job[i].wt;
+}
+printf("PID\tBT\tAT\tTAT\tWT\n");
+for(i=0;i<n;i++)
+printf("%d\t%d\t%d\t%d\t%d\n",i+1,job[i].bt,job[i].at,job[i].tat,job[i].wt);
+printf("Avg TAT=%f\nAvg WT=%f\n",tat_sum/n,wt_sum/n);
+}
+void main()
+{
+int n,q,c,i;
+printf("Enter the number of processes :");
+scanf("%d",&n);
+printf("Enter the arrival time and burst time\n");
+for(i=0;i<n;i++)
+{
+scanf("%d%d",&job[i].at,&job[i].bt);
+}
+while(1)
+
+{
+printf("1.Round Robin\n2.SRTF\n3.Exit\n");
+scanf("%d",&c);
+switch(c)
+{
+case 1:printf("Enter time quantum :");
+scanf("%d",&q);
+jobscheduler(job,n,q,0);
+break;
+case 2:jobscheduler(job,n,1,1);
+break;
+case 3:exit(0);
+}
+}
+}
