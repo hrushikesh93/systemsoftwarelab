@@ -1,77 +1,70 @@
 //-----------------------yacc code---------------------------------
 
-%{ 
-#include<stdio.h> 
-#include<stdlib.h> 
-int yylex(); 
-int id=0,key=0,op=0; 
-%} 
-%token ID KEY OP 
-%% 
-input: ID input {++id;}
-|KEY input {++key;} 
-|OP input {++op;} 
-|ID {++id;} 
-|KEY {++key;} 
-|OP {++op;} 
-; 
-%% 
+%{
+
+        #include<stdio.h>
+        #include<stdlib.h> 
+        int id=0,key=0,op=0;
+%}
+%token ID KEY OP
+
+%%
+
+input:ID input {++id;}
+     |KEY input {++key;}
+     |OP input {++op;}
+     |ID {++id;} 
+     |KEY {++key;}
+     |OP {++op;}
+     ;
+;
+
+(a<b)
+
+if ( --> op input ;
+if a --> id input;
+if < --> op input;
+if b -->
+%%
+
 extern FILE *yyin; 
-int main() 
-{ 
-yyin=fopen("6b.c","r"); 
-yyparse(); 
-printf("id is%d \n key is %d \n op is %d\n",id,key,op); } 
-int yyerror() 
-{ 
-printf("ERROR\n"); 
-exit(0); 
-} 
+void main()
+{
+        yyin = fopen("abc.c","r");
+        yyparse();
+        printf("Keywords=%d\n",key); 
+        printf("Identifiers-%d\n", id);
+        printf("Operators=%d\n",op);
+}
+void yyerror()
+{
+        printf("Error"); 
+        exit(0);
+}        
 
 //----------------------------lex code------------------------------
 
-%{ 
-#include"y.tab.h" 
-%} 
-%% 
-"<".*\n 
-[+|-|*|/|=|<|>] {printf("operator is %s\n",yytext); return OP;} 
-include|int|char|float|void|for|if|else|main|printf {printf("keyword is %s\n",yytext);  return KEY;} 
-[_a-zA-Z]* {printf("Identifiers is %s\n",yytext); return ID;} 
-"(".*")" 
-. 
-%% 
-int main() 
-{ 
-yyin=fopen("6b.c","r"); 
-yyparse(); 
-printf("id is%d \n key is %d \n op is %d\n",id,key,op); } 
-int yyerror() 
-{ 
-printf("ERROR\n"); 
-exit(0); 
-} 
+%{
+        #include<stdio.h>
+        #include"y.tab.h"
+%}
+
+%%
+"#".*\n
+[+|\-|\*|\/|=|<|>|(|)|{|}|] {printf("Operator is:%s\n",yytext);return OP;}
+int|char|bool|float|void|if|else|return|break|continue|printf|scanf|double|main {printf("Keyword is:%s\n",yytext);return KEY;}
+_?[a-z|A-Z]_?[a-z|A-Z|0-9]* {printf("Identifier is:%s\n",yytext); return ID;}
+.
+
+%%
 
 //-----------------------------6b.c---------------------------------
 
-%{ 
-#include<stdlib.h> 
-#include"y.tab.h" 
-extern int yylval; 
-%} 
-%% 
-[0-9]+ {yylval=atoi(yytext);return NUM;} 
-[\t] ; 
-\n return 0; 
-. return yytext[0]; 
-%% 
-int main() 
-{ 
-yyin=fopen("6b.c","r"); 
-yyparse(); 
-printf("id is%d \n key is %d \n op is %d\n",id,key,op); } 
-int yyerror() 
-{ 
-printf("ERROR\n"); 
-exit(0); 
+#include<stdio.h>
+int main()
+{
+int a=7,b=5,c=5;
+c=a+b;
+printf("sum = %d",c);
+return 0;
 }
